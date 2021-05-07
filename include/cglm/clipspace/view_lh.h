@@ -7,10 +7,16 @@
 
 /*
  Functions:
-   CGLM_INLINE void  glm_lookat_lh(vec3 eye, vec3 center, vec3 up, mat4 dest)
-   CGLM_INLINE void  glm_look_lh(vec3 eye, vec3 dir, vec3 up, mat4 dest)
-   CGLM_INLINE void  glm_look_anyup_lh(vec3 eye, vec3 dir, mat4 dest)
+   CGLM_INLINE void glm_lookat_lh(vec3 eye, vec3 center, vec3 up, mat4 dest)
+   CGLM_INLINE void glm_look_lh(vec3 eye, vec3 dir, vec3 up, mat4 dest)
+   CGLM_INLINE void glm_look_anyup_lh(vec3 eye, vec3 dir, mat4 dest)
  */
+
+#ifndef cglm_view_lh_h
+#define cglm_view_lh_h
+
+#include "../common.h"
+#include "../plane.h"
 
 /*!
  * @brief set up view matrix (LH)
@@ -89,3 +95,5 @@ glm_look_anyup_lh(vec3 eye, vec3 dir, mat4 dest) {
   glm_vec3_ortho(dir, up);
   glm_look_lh(eye, dir, up, dest);
 }
+
+#endif /*cglm_view_lh_h*/

@@ -9,6 +9,13 @@
  * @param[in]  up     up vector
  * @param[out] dest   result matrix
  */
+
+#ifndef cglm_view_rh_h
+#define cglm_view_rh_h
+
+#include "../common.h"
+#include "../plane.h"
+
 CGLM_INLINE
 void
 glm_lookat_rh(vec3 eye, vec3 center, vec3 up, mat4 dest) {
@@ -75,3 +82,5 @@ glm_look_anyup_rh(vec3 eye, vec3 dir, mat4 dest) {
   glm_vec3_ortho(dir, up);
   glm_look_rh(eye, dir, up, dest);
 }
+
+#endif /*cglm_view_rh_h*/

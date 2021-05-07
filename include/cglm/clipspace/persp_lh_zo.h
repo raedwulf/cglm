@@ -7,31 +7,10 @@
 
 /*
  Functions:
-   CGLM_INLINE void  glm_frustum_lh_zo(float left,    float right,
-                                       float bottom,  float top,
-                                       float nearVal, float farVal,
-                                       mat4  dest)
-   CGLM_INLINE void  glm_ortho_lh_zo(float left,    float right,
-                                       float bottom,  float top,
-                                       float nearVal, float farVal,
-                                       mat4  dest)
-   CGLM_INLINE void  glm_perspective_lh_zo(float fovy,
-                                           float aspect,
-                                           float nearVal,
-                                           float farVal,
-                                           mat4  dest)
-   CGLM_INLINE void glm_ortho_aabb_lh_zo(vec3 box[2], mat4 dest)
-   CGLM_INLINE void glm_ortho_aabb_p_lh_zo(vec3 box[2],
-                                           float padding,
-                                           mat4 dest)
-   CGLM_INLINE void glm_ortho_aabb_pz_lh_zo(vec3 box[2],
-                                            float padding,
-                                            mat4 dest)
-   CGLM_INLINE void glm_ortho_default_lh_zo(float aspect,
-                                            mat4 dest)
-   CGLM_INLINE void glm_ortho_default_s_lh_zo(float aspect,
-                                              float size,
-                                              mat4 dest)
+   CGLM_INLINE void glm_frustum_lh_zo(float left,    float right,
+                                      float bottom,  float top,
+                                      float nearVal, float farVal,
+                                      mat4  dest)
    CGLM_INLINE void glm_perspective_lh_zo(float fovy,
                                           float aspect,
                                           float nearVal,
@@ -62,15 +41,15 @@
   CGLM_INLINE void glm_persp_sizes_lh_zo(mat4 proj, float fovy, vec4 dest)
  */
 
-#ifndef cglm_cam_lh_zo_h
-#define cglm_cam_lh_zo_h
+#ifndef cglm_persp_lh_zo_h
+#define cglm_persp_lh_zo_h
 
-#include "common.h"
-#include "plane.h"
+#include "../common.h"
+#include "../plane.h"
 
 /*!
  * @brief set up perspective peprojection matrix with a left-hand coordinate
- * system and a clip-space of [0, 1].
+ *        system and a clip-space of [0, 1].
  *
  * @param[in]  left    viewport.left
  * @param[in]  right   viewport.right
@@ -103,153 +82,6 @@ glm_frustum_lh_zo(float left,    float right,
   dest[2][3] = 1.0f;
   dest[3][2] = farVal * nearVal * fn;
 }
-
-/*!
- * @brief set up orthographic projection matrix with a left-hand coordinate
- * system and a clip-space of [0, 1].
- *
- * @param[in]  left    viewport.left
- * @param[in]  right   viewport.right
- * @param[in]  bottom  viewport.bottom
- * @param[in]  top     viewport.top
- * @param[in]  nearVal near clipping plane
- * @param[in]  farVal  far clipping plane
- * @param[out] dest    result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_lh_zo(float left,    float right,
-                float bottom,  float top,
-                float nearVal, float farVal,
-                mat4  dest) {
-  float rl, tb, fn;
-
-  glm_mat4_zero(dest);
-
-  rl = 1.0f / (right  - left);
-  tb = 1.0f / (top    - bottom);
-  fn =-1.0f / (farVal - nearVal);
-
-  dest[0][0] = 2.0f * rl;
-  dest[1][1] = 2.0f * tb;
-  dest[2][2] =-fn;
-  dest[3][0] =-(right  + left)    * rl;
-  dest[3][1] =-(top    + bottom)  * tb;
-  dest[3][2] = nearVal * fn;
-  dest[3][3] = 1.0f;
-}
-
-/*!
- * @brief set up orthographic projection matrix using bounding box
- * with a left-hand coordinate system and a clip-space with depth
- * values from zero to one.
- *
- * bounding box (AABB) must be in view space
- *
- * @param[in]  box   AABB
- * @param[out] dest  result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_aabb_lh_zo(vec3 box[2], mat4 dest) {
-  glm_ortho_lh_zo(box[0][0],  box[1][0],
-                  box[0][1],  box[1][1],
-                 -box[1][2], -box[0][2],
-                  dest);
-}
-
-/*!
- * @brief set up orthographic projection matrix using bounding box
- * with a left-hand coordinate system and a clip-space with depth
- * values from zero to one.
- *
- * bounding box (AABB) must be in view space
- *
- * @param[in]  box     AABB
- * @param[in]  padding padding
- * @param[out] dest    result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_aabb_p_lh_zo(vec3 box[2], float padding, mat4 dest) {
-  glm_ortho_lh_zo(box[0][0] - padding,    box[1][0] + padding,
-                  box[0][1] - padding,    box[1][1] + padding,
-                -(box[1][2] + padding), -(box[0][2] - padding),
-                  dest);
-}
-
-/*!
- * @brief set up orthographic projection matrix using bounding box
- * with a left-hand coordinate system and a clip-space with depth
- * values from zero to one.
- *
- * bounding box (AABB) must be in view space
- *
- * @param[in]  box     AABB
- * @param[in]  padding padding for near and far
- * @param[out] dest    result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_aabb_pz_lh_zo(vec3 box[2], float padding, mat4 dest) {
-  glm_ortho_lh_zo(box[0][0],              box[1][0],
-                  box[0][1],              box[1][1],
-                -(box[1][2] + padding), -(box[0][2] - padding),
-                  dest);
-}
-
-/*!
- * @brief set up unit orthographic projection matrix with a left-hand
- * coordinate system and a clip-space of [0, 1].
- *
- * @param[in]  aspect aspect ration ( width / height )
- * @param[out] dest   result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_default_lh_zo(float aspect, mat4 dest) {
-  if (aspect >= 1.0f) {
-    glm_ortho_lh_zo(-aspect, aspect, -1.0f, 1.0f, -100.0f, 100.0f, dest);
-    return;
-  }
-
-  aspect = 1.0f / aspect;
-
-  glm_ortho_lh_zo(-1.0f, 1.0f, -aspect, aspect, -100.0f, 100.0f, dest);
-}
-
-/*!
- * @brief set up orthographic projection matrix with given CUBE size
- * with a left-hand coordinate system and a clip-space with depth
- * values from zero to one.
- *
- * @param[in]  aspect aspect ratio ( width / height )
- * @param[in]  size   cube size
- * @param[out] dest   result matrix
- */
-CGLM_INLINE
-void
-glm_ortho_default_s_lh_zo(float aspect, float size, mat4 dest) {
-  if (aspect >= 1.0f) {
-    glm_ortho_lh_zo(-size * aspect,
-                     size * aspect,
-                    -size,
-                     size,
-                    -size - 100.0f,
-                     size + 100.0f,
-                     dest);
-    return;
-  }
-
-  glm_ortho_lh_zo(-size,
-                   size,
-                  -size / aspect,
-                   size / aspect,
-                  -size - 100.0f,
-                   size + 100.0f,
-                   dest);
-}
-
 
 /*!
  * @brief set up perspective projection matrix with a left-hand coordinate
@@ -506,4 +338,4 @@ glm_persp_sizes_lh_zo(mat4 proj, float fovy, vec4 dest) {
   dest[2]  = a * dest[3];
 }
 
-#endif /*cglm_cam_lh_zo_h*/
+#endif /*cglm_persp_lh_zo_h*/
