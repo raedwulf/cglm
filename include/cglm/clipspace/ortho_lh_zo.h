@@ -8,9 +8,9 @@
 /*
  Functions:
    CGLM_INLINE void glm_ortho_lh_zo(float left,    float right,
-                                       float bottom,  float top,
-                                       float nearVal, float farVal,
-                                       mat4  dest)
+                                    float bottom,  float top,
+                                    float nearZ, float farZ,
+                                    mat4  dest)
    CGLM_INLINE void glm_ortho_aabb_lh_zo(vec3 box[2], mat4 dest)
    CGLM_INLINE void glm_ortho_aabb_p_lh_zo(vec3 box[2],
                                            float padding,
@@ -39,15 +39,15 @@
  * @param[in]  right   viewport.right
  * @param[in]  bottom  viewport.bottom
  * @param[in]  top     viewport.top
- * @param[in]  nearVal near clipping plane
- * @param[in]  farVal  far clipping plane
+ * @param[in]  nearZ   near clipping plane
+ * @param[in]  farZ    far clipping plane
  * @param[out] dest    result matrix
  */
 CGLM_INLINE
 void
 glm_ortho_lh_zo(float left,    float right,
                 float bottom,  float top,
-                float nearVal, float farVal,
+                float nearZ, float farZ,
                 mat4  dest) {
   float rl, tb, fn;
 
@@ -55,14 +55,14 @@ glm_ortho_lh_zo(float left,    float right,
 
   rl = 1.0f / (right  - left);
   tb = 1.0f / (top    - bottom);
-  fn =-1.0f / (farVal - nearVal);
+  fn =-1.0f / (farZ - nearZ);
 
   dest[0][0] = 2.0f * rl;
   dest[1][1] = 2.0f * tb;
   dest[2][2] =-fn;
   dest[3][0] =-(right  + left)    * rl;
   dest[3][1] =-(top    + bottom)  * tb;
-  dest[3][2] = nearVal * fn;
+  dest[3][2] = nearZ * fn;
   dest[3][3] = 1.0f;
 }
 
