@@ -16,6 +16,8 @@
                                           float nearZ,
                                           float farZ,
                                           mat4  dest)
+   CGLM_INLINE void glm_perspective_default_lh_zo(float aspect, mat4 dest)
+   CGLM_INLINE void glm_perspective_resize_lh_zo(float aspect, mat4 proj)
    CGLM_INLINE void glm_persp_move_far_lh_zo(mat4 proj,
                                              float deltaFar)
    CGLM_INLINE void glm_persp_decomp_lh_zo(mat4 proj,
@@ -46,6 +48,7 @@
 
 #include "../common.h"
 #include "../plane.h"
+#include "persp.h"
 
 /*!
  * @brief set up perspective peprojection matrix with a left-hand coordinate
@@ -127,7 +130,7 @@ glm_perspective_lh_zo(float fovy,
 CGLM_INLINE
 void
 glm_persp_move_far_lh_zo(mat4 proj, float deltaFar) {
-  float fn, farZ, nearZ, p22, p32, h;
+  float fn, farZ, nearZ, p22, p32;
 
   p22        = -proj[2][2];
   p32        = proj[3][2];
@@ -152,6 +155,23 @@ CGLM_INLINE
 void
 glm_perspective_default_lh_zo(float aspect, mat4 dest) {
   glm_perspective_lh_zo(GLM_PI_4f, aspect, 0.01f, 100.0f, dest);
+}
+
+/*!
+ * @brief resize perspective matrix by aspect ratio ( width / height )
+ *        this makes very easy to resize proj matrix when window /viewport
+ *        reized
+ *
+ * @param[in]      aspect aspect ratio ( width / height )
+ * @param[in, out] proj   perspective projection matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_resize_lh_zo(float aspect, mat4 proj) {
+  if (proj[0][0] == 0.0f)
+    return;
+
+  proj[0][0] = proj[1][1] / aspect;
 }
 
 /*!

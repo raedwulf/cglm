@@ -16,6 +16,8 @@
                                           float nearZ,
                                           float farZ,
                                           mat4  dest)
+   CGLM_INLINE void glm_perspective_default_rh_zo(float aspect, mat4 dest)
+   CGLM_INLINE void glm_perspective_resize_rh_zo(float aspect, mat4 proj)
    CGLM_INLINE void glm_persp_move_far_rh_zo(mat4 proj,
                                              float deltaFar)
    CGLM_INLINE void glm_persp_decomp_rh_zo(mat4 proj,
@@ -46,6 +48,7 @@
 
 #include "../common.h"
 #include "../plane.h"
+#include "persp.h"
 
 /*!
  * @brief set up perspective peprojection matrix with a right-hand coordinate
@@ -115,9 +118,40 @@ glm_perspective_rh_zo(float fovy,
 }
 
 /*!
+ * @brief set up perspective projection matrix with default near/far
+ *        and angle values with a right-hand coordinate system and a
+ *        clip-space of [0, 1].
+ *
+ * @param[in]  aspect aspect ratio ( width / height )
+ * @param[out] dest   result matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_default_rh_zo(float aspect, mat4 dest) {
+  glm_perspective_rh_zo(GLM_PI_4f, aspect, 0.01f, 100.0f, dest);
+}
+
+/*!
+ * @brief resize perspective matrix by aspect ratio ( width / height )
+ *        this makes very easy to resize proj matrix when window /viewport
+ *        resized with a right-hand coordinate system and a clip-space of
+ *        [0, 1].
+ *
+ * @param[in]      aspect aspect ratio ( width / height )
+ * @param[in, out] proj   perspective projection matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_resize_rh_zo(float aspect, mat4 proj) {
+  if (proj[0][0] == 0.0f)
+    return;
+
+  proj[0][0] = proj[1][1] / aspect;
+}
+
+/*!
  * @brief extend perspective projection matrix's far distance with a
- *        right-hand coordinate system and a clip-space with depth values
- *        from zero to one.
+ *        right-hand coordinate system and a clip-space of [0, 1].
  *
  * this function does not guarantee far >= near, be aware of that!
  *
@@ -127,7 +161,7 @@ glm_perspective_rh_zo(float fovy,
 CGLM_INLINE
 void
 glm_persp_move_far_rh_zo(mat4 proj, float deltaFar) {
-  float fn, farZ, nearZ, p22, p32, h;
+  float fn, farZ, nearZ, p22, p32;
 
   p22        = proj[2][2];
   p32        = proj[3][2];
@@ -138,20 +172,6 @@ glm_persp_move_far_rh_zo(mat4 proj, float deltaFar) {
 
   proj[2][2] = farZ * fn;
   proj[3][2] = nearZ * farZ * fn;
-}
-
-/*!
- * @brief set up perspective projection matrix with default near/far
- *        and angle values with a right-hand coordinate system and a 
- *        clip-space of [0, 1].
- *
- * @param[in]  aspect aspect ratio ( width / height )
- * @param[out] dest   result matrix
- */
-CGLM_INLINE
-void
-glm_perspective_default_rh_zo(float aspect, mat4 dest) {
-  glm_perspective_rh_zo(GLM_PI_4f, aspect, 0.01f, 100.0f, dest);
 }
 
 /*!

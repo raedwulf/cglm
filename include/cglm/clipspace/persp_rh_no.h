@@ -16,6 +16,8 @@
                                           float nearZ,
                                           float farZ,
                                           mat4  dest)
+   CGLM_INLINE void glm_perspective_default_rh_no(float aspect, mat4 dest)
+   CGLM_INLINE void glm_perspective_resize_rh_no(float aspect, mat4 proj)
    CGLM_INLINE void glm_persp_move_far_rh_no(mat4 proj,
                                              float deltaFar)
    CGLM_INLINE void glm_persp_decomp_rh_no(mat4 proj,
@@ -41,11 +43,12 @@
   CGLM_INLINE void glm_persp_sizes_rh_no(mat4 proj, float fovy, vec4 dest)
  */
 
-#ifndef cglm_cam_rh_no_h
-#define cglm_cam_rh_no_h
+#ifndef cglm_persp_rh_no_h
+#define cglm_persp_rh_no_h
 
 #include "../common.h"
 #include "../plane.h"
+#include "persp.h"
 
 /*!
  * @brief set up perspective peprojection matrix
@@ -118,6 +121,38 @@ glm_perspective_rh_no(float fovy,
 }
 
 /*!
+ * @brief set up perspective projection matrix with default near/far
+ *        and angle values with a right-hand coordinate system and a
+ *        clip-space of [-1, 1].
+ *
+ * @param[in]  aspect aspect ratio ( width / height )
+ * @param[out] dest   result matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_default_rh_no(float aspect, mat4 dest) {
+  glm_perspective_rh_no(GLM_PI_4f, aspect, 0.01f, 100.0f, dest);
+}
+
+/*!
+ * @brief resize perspective matrix by aspect ratio ( width / height )
+ *        this makes very easy to resize proj matrix when window /viewport
+ *        resized with a right-hand coordinate system and a
+ *        clip-space of [-1, 1].
+ *
+ * @param[in]      aspect aspect ratio ( width / height )
+ * @param[in, out] proj   perspective projection matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_resize_rh_no(float aspect, mat4 proj) {
+  if (proj[0][0] == 0.0f)
+    return;
+
+  proj[0][0] = proj[1][1] / aspect;
+}
+
+/*!
  * @brief extend perspective projection matrix's far distance
  *        with a right-hand coordinate system and a
  *        clip-space of [-1, 1].
@@ -130,7 +165,7 @@ glm_perspective_rh_no(float fovy,
 CGLM_INLINE
 void
 glm_persp_move_far_rh_no(mat4 proj, float deltaFar) {
-  float fn, farZ, nearZ, p22, p32, h;
+  float fn, farZ, nearZ, p22, p32;
 
   p22        = proj[2][2];
   p32        = proj[3][2];

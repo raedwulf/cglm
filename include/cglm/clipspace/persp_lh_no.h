@@ -12,15 +12,12 @@
                                        float nearZ, float farZ,
                                        mat4  dest)
    CGLM_INLINE void glm_perspective_lh_no(float fovy,
-                                           float aspect,
-                                           float nearZ,
-                                           float farZ,
-                                           mat4  dest)
-   CGLM_INLINE void glm_perspective_lh_no(float fovy,
                                           float aspect,
                                           float nearZ,
                                           float farZ,
                                           mat4  dest)
+   CGLM_INLINE void glm_perspective_default_lh_no(float aspect, mat4 dest)
+   CGLM_INLINE void glm_perspective_resize_lh_no(float aspect, mat4 proj)
    CGLM_INLINE void glm_persp_move_far_lh_no(mat4 proj,
                                              float deltaFar)
    CGLM_INLINE void glm_persp_decomp_lh_no(mat4 proj,
@@ -46,11 +43,12 @@
   CGLM_INLINE void glm_persp_sizes_lh_no(mat4 proj, float fovy, vec4 dest)
  */
 
-#ifndef cglm_cam_lh_no_h
-#define cglm_cam_lh_no_h
+#ifndef cglm_persp_lh_no_h
+#define cglm_persp_lh_no_h
 
 #include "../common.h"
 #include "../plane.h"
+#include "persp.h"
 
 /*!
  * @brief set up perspective peprojection matrix
@@ -123,6 +121,38 @@ glm_perspective_lh_no(float fovy,
 }
 
 /*!
+ * @brief set up perspective projection matrix with default near/far
+ *        and angle values with a left-hand coordinate system and a
+ *        clip-space of [-1, 1].
+ *
+ * @param[in]  aspect aspect ratio ( width / height )
+ * @param[out] dest   result matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_default_lh_no(float aspect, mat4 dest) {
+  glm_perspective_lh_no(GLM_PI_4f, aspect, 0.01f, 100.0f, dest);
+}
+
+/*!
+ * @brief resize perspective matrix by aspect ratio ( width / height )
+ *        this makes very easy to resize proj matrix when window /viewport
+ *        resized with a left-hand coordinate system and a
+ *        clip-space of [-1, 1].
+ *
+ * @param[in]      aspect aspect ratio ( width / height )
+ * @param[in, out] proj   perspective projection matrix
+ */
+CGLM_INLINE
+void
+glm_perspective_resize_lh_no(float aspect, mat4 proj) {
+  if (proj[0][0] == 0.0f)
+    return;
+
+  proj[0][0] = proj[1][1] / aspect;
+}
+
+/*!
  * @brief extend perspective projection matrix's far distance
  *        with a left-hand coordinate system and a
  *        clip-space of [-1, 1].
@@ -135,7 +165,7 @@ glm_perspective_lh_no(float fovy,
 CGLM_INLINE
 void
 glm_persp_move_far_lh_no(mat4 proj, float deltaFar) {
-  float fn, farZ, nearZ, p22, p32, h;
+  float fn, farZ, nearZ, p22, p32;
 
   p22        = -proj[2][2];
   p32        = proj[3][2];
@@ -165,8 +195,8 @@ CGLM_INLINE
 void
 glm_persp_decomp_lh_no(mat4 proj,
                        float * __restrict nearZ, float * __restrict farZ,
-                       float * __restrict top,     float * __restrict bottom,
-                       float * __restrict left,    float * __restrict right) {
+                       float * __restrict top,   float * __restrict bottom,
+                       float * __restrict left,  float * __restrict right) {
   float m00, m11, m20, m21, m22, m32, n, f;
   float n_m11, n_m00;
 
@@ -222,7 +252,7 @@ void
 glm_persp_decomp_x_lh_no(mat4 proj,
                          float * __restrict left,
                          float * __restrict right) {
-  float nearZ, m20, m00;
+  float nearZ, m20, m00, m22;
 
   m00 = proj[0][0];
   m20 = proj[2][0];
@@ -272,8 +302,8 @@ glm_persp_decomp_y_lh_no(mat4 proj,
 CGLM_INLINE
 void
 glm_persp_decomp_z_lh_no(mat4 proj,
-                      float * __restrict nearZ,
-                      float * __restrict farZ) {
+                         float * __restrict nearZ,
+                         float * __restrict farZ) {
   float m32, m22;
 
   m32 = proj[3][2];

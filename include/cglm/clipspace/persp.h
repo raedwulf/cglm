@@ -18,6 +18,7 @@
 
 #include "../common.h"
 #include "../plane.h"
+#include "../mat4.h"
 
 /*!
  * @brief returns field of view angle along the Y-axis (in radians)
